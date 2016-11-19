@@ -29,19 +29,22 @@ else:
         posts_replied_to = filter(None, posts_replied_to)
 
 #defines main functionality of lolbot
-def lolbot_loop():
-    oauth_helper.refresh()
-    for comment in r.get_comments("pythonforengineers"):
+def lolbot_loop(comments):
+
+    for comment in comments:
         body = comment.body.lower()
-        if re.search("lol", body, re.IGNORECASE) and comment.score < 5 and comment.id not in posts_replied_to:
+        if re.search("python", body, re.IGNORECASE) and comment.score < 5 and comment.id not in posts_replied_to:
+            print("made it to if")
             comment.reply(MESSAGE)
-            posts_replied_to.add(comment.id)
+            print("made it past reply")
+            posts_replied_to.append(comment.id)
             print("Comment Made!")
             exit(1)
 
 #handles Oauth refreshing
 while True:
     try:
-        lolbot_loop()
+        comments = r.get_comments("pythonforengineers")
+        lolbot_loop(comments)
     except praw.errors.OAuthInvalidToken:
         oauth_helper.refresh()
