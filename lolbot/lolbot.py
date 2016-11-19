@@ -19,6 +19,19 @@ oauth_helper = PrawOAuth2Mini(r, app_key=app_key,
                               app_secret=app_secret, access_token=access_token,
                               scopes=scopes, refresh_token=refresh_token)
 
+#defines main functionality of lolbot
+def lolbot_loop(comments, posts_replied_to):
+
+    for comment in comments:
+        body = comment.body.lower()
+        if re.search("python", body, re.IGNORECASE) and comment.score < 5 and comment.id not in posts_replied_to:
+            print("made it into if")
+            comment.reply(MESSAGE)
+            print("made it past reply")
+            posts_replied_to.append(comment.id)
+            print("Comment added to posts_replied_to.txt!")
+            exit(1)
+
 #gets the posts_replied_to file
 if not os.path.isfile("posts_replied_to.txt"):
      posts_replied_to = []
@@ -28,23 +41,12 @@ else:
         posts_replied_to = posts_replied_to.split("\n")
         posts_replied_to = filter(None, posts_replied_to)
 
-#defines main functionality of lolbot
-def lolbot_loop(comments):
 
-    for comment in comments:
-        body = comment.body.lower()
-        if re.search("python", body, re.IGNORECASE) and comment.score < 5 and comment.id not in posts_replied_to:
-            print("made it to if")
-            comment.reply(MESSAGE)
-            print("made it past reply")
-            posts_replied_to.append(comment.id)
-            print("Comment Made!")
-            exit(1)
 
 #handles Oauth refreshing
 while True:
     try:
         comments = r.get_comments("pythonforengineers")
-        lolbot_loop(comments)
+        lolbot_loop(comments, posts_replied_to)
     except praw.errors.OAuthInvalidToken:
         oauth_helper.refresh()
