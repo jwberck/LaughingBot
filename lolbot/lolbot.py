@@ -11,14 +11,27 @@ from prawoauth2 import PrawOAuth2Mini
 def lolbot_loop(comments, posts_replied_to):
     MESSAGE = "lol"
     for comment in comments:
+
+        author = comment.author.name
+
+        if author == "LaughingBot":
+            print("found author")
+            continue
+
         body = comment.body.lower()
-        if re.search("python", body, re.IGNORECASE) and comment.score < 5 and comment.id not in posts_replied_to:
+        if re.search("HARAMBAE", body, re.IGNORECASE) and comment.score < 10 and comment.id not in posts_replied_to:
             print("made it into if")
             comment.reply(MESSAGE)
             print("made it past reply")
             posts_replied_to.append(comment.id)
-            print("Comment added to posts_replied_to.txt!")
+            print("Comment added to posts_replied_to")
+            # Write our updated list back to the file
+            with open("posts_replied_to.txt", "w") as f:
+                for post_id in reddit_posts_replied_to:
+                    f.write(post_id + "\n")
+            print("updated posts_replied_to written to file")
             exit(1)
+
 
 
 if not os.path.isfile("config_lolbot.py"):
@@ -46,3 +59,5 @@ while True:
         lolbot_loop(reddit_comments, reddit_posts_replied_to)
     except praw.errors.OAuthInvalidToken:
         oauth_helper.refresh()
+
+
