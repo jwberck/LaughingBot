@@ -10,14 +10,22 @@ from prawoauth2 import PrawOAuth2Mini
 # defines main functionality of lolbot
 def lolbot_loop(comments, posts_replied_to):
     MESSAGE = "lol"
+    count = 0
     for comment in comments:
-
+        count += 1
+        print(count)
         author = comment.author.name
 
         # prevents bot from responding to its self
         if author == "LaughingBot":
             print("found author")
             continue
+
+        if comment.score < -5:
+            print(comment.author)
+            print(comment.score)
+            print(comment.body)
+
 
         # searches a subreddit for the phrase "lol". if it is downvoted enough, it will respond with "lol"
         body = comment.body.lower()
@@ -57,9 +65,11 @@ else:
 # handles Oauth refreshing
 while True:
     try:
+        print("in high level loop")
         reddit_comments = reddit_instance.get_comments("me_irl")
         lolbot_loop(reddit_comments, reddit_posts_replied_to)
     except praw.errors.OAuthInvalidToken:
         oauth_helper.refresh()
+        print("oauth refreshed")
 
 
