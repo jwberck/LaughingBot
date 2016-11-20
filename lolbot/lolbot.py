@@ -14,12 +14,14 @@ def lolbot_loop(comments, posts_replied_to):
 
         author = comment.author.name
 
+        # prevents bot from responding to its self
         if author == "LaughingBot":
             print("found author")
             continue
 
+        # searches a subreddit for the phrase "lol". if it is downvoted enough, it will respond with "lol"
         body = comment.body.lower()
-        if re.search("HARAMBAE", body, re.IGNORECASE) and comment.score < 10 and comment.id not in posts_replied_to:
+        if re.search("lol", body, re.IGNORECASE) and comment.score < -10 and comment.id not in posts_replied_to:
             print("made it into if")
             comment.reply(MESSAGE)
             print("made it past reply")
@@ -55,7 +57,7 @@ else:
 # handles Oauth refreshing
 while True:
     try:
-        reddit_comments = reddit_instance.get_comments("pythonforengineers")
+        reddit_comments = reddit_instance.get_comments("me_irl")
         lolbot_loop(reddit_comments, reddit_posts_replied_to)
     except praw.errors.OAuthInvalidToken:
         oauth_helper.refresh()
